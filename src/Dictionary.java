@@ -22,9 +22,9 @@ public class Dictionary {
         List<String> words = getWordsFromFile();
 
         Random random = new Random();
-        int randomIndexOfWord = random.nextInt(words.size());
+        int randomIndexWord = random.nextInt(words.size());
 
-        return (words.get(randomIndexOfWord));
+        return (words.get(randomIndexWord));
     }
 
 

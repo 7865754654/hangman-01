@@ -18,7 +18,7 @@ public class Hangman {
                          |       |
                          |       0
                          |      /|\\
-                         |        \\
+                         |        
                          |      
                          |      
                         =========
@@ -28,7 +28,7 @@ public class Hangman {
                           _______
                          |       |
                          |       0
-                         |      /|\\
+                         |      /|
                          |      
                          |      
                          |      

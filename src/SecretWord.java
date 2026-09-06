@@ -67,7 +67,28 @@ public class SecretWord {
     private StringBuilder handleWrongLetter(int gameAttempt) {
         gameAttempt = decrementGameAttempts(gameAttempt);
         drawHangman(gameAttempt);
+        printWrongLetterMessage(gameAttempt);
 
+        return maskRandomWord;
+    }
+
+
+    private int decrementGameAttempts(int gameAttempt) {
+        --gameAttempt;
+
+        Game.setGameAttempt(gameAttempt);
+
+        return gameAttempt;
+    }
+
+
+    private void drawHangman(int gameAttempt) {
+        String picturePartHangman = Hangman.PART_HANGMAN[gameAttempt];
+        System.out.println(picturePartHangman);
+    }
+
+
+    private void printWrongLetterMessage(int gameAttempt) {
         if (gameAttempt == 0) {
             System.out.println(letter + " Такой буквы нет. Осталась " + gameAttempt + " попыток.");
             System.out.println("Правильное слово: " + randomWord);
@@ -79,21 +100,6 @@ public class SecretWord {
             System.out.println(letter + " Такой буквы нет. Осталось " + gameAttempt + " попытки.");
         }
         System.out.println("Текущее слово: " + maskRandomWord);
-
-        return maskRandomWord;
-    }
-
-    private int decrementGameAttempts(int gameAttempt) {
-        --gameAttempt;
-
-        Game.setGameAttempt(gameAttempt);
-
-        return gameAttempt;
-    }
-
-    private void drawHangman(int gameAttempt) {
-        String picturePartOfHangman = Hangman.PART_HANGMAN[gameAttempt];
-        System.out.println(picturePartOfHangman);
     }
 }
 

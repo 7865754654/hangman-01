@@ -70,7 +70,6 @@ public class Game {
 
         } catch (RuntimeException e) {
             System.out.println("Не удалось запустить игру. Попробуйте позже.");
-            e.printStackTrace();
         }
     }
 
@@ -94,7 +93,7 @@ public class Game {
     }
 
 
-    public static boolean playAgain() {
+    private static boolean playAgain() {
         if (gameAttempt == 0) {
             gameAttempt = 5;
             System.out.printf("Вы проиграли. Хотите начать заново ?%n");
