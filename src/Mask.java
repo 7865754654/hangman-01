@@ -11,5 +11,4 @@ public class Mask {
         System.out.printf("Слово из %d букв загадано. %s%n", randomWord.length(), maskWord);
         return maskWord;
     }
-
 }

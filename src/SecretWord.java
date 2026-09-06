@@ -7,53 +7,41 @@ public class SecretWord {
 
     private Set<Character> setUsedLetters = new LinkedHashSet<>();
 
-    private char letter;
-
-    public void setLetter(char letter) {
-        this.letter = letter;
-    }
-
-
     public SecretWord(String randomWord, StringBuilder maskRandomWord) {
        this.randomWord = randomWord;
        this.maskRandomWord = maskRandomWord;
     }
 
-    public StringBuilder findLetterInWord(int gameAttempt) {
-        if (!isLetterUsed()) {
-            checkLetter(gameAttempt);
-        }
-
-        return maskRandomWord;
+    public StringBuilder findLetterInWord(char letter) {
+            checkLetter(letter);
+            return maskRandomWord;
     }
 
-    private boolean isLetterUsed() {
+    public boolean isLetterUsed(char letter) {
         if (setUsedLetters.contains(letter)) {
             System.out.println("Вы уже вводили эту букву: " + setUsedLetters);
             System.out.println("Текущее слово: " + maskRandomWord);
             return true;
         }
-        addUsedLetterInList();
+        addUsedLetterInList(letter);
         return false;
     }
 
-
-    private void addUsedLetterInList() {
+    private void addUsedLetterInList(char letter) {
         setUsedLetters.add(letter);
         System.out.println();
         System.out.println("Использованные буквы: " + setUsedLetters);
     }
 
-
-    private StringBuilder checkLetter(int gameAttempt) {
+    private StringBuilder checkLetter(char letter) {
         if (randomWord.indexOf(String.valueOf(letter)) != -1) {
-            return handleCorrectLetter();
+            return handleCorrectLetter(letter);
         }
-            return handleWrongLetter(gameAttempt);
+
+        return maskRandomWord;
     }
 
-
-    private StringBuilder handleCorrectLetter() {
+    private StringBuilder handleCorrectLetter(char letter) {
         for (int i = 0; i < randomWord.length(); i++) {
             if (randomWord.charAt(i) == letter) {
                 maskRandomWord.setCharAt(i, letter);
@@ -61,45 +49,6 @@ public class SecretWord {
         }
         System.out.println("Текущее слово: " + maskRandomWord);
         return maskRandomWord;
-    }
-
-
-    private StringBuilder handleWrongLetter(int gameAttempt) {
-        gameAttempt = decrementGameAttempts(gameAttempt);
-        drawHangman(gameAttempt);
-        printWrongLetterMessage(gameAttempt);
-
-        return maskRandomWord;
-    }
-
-
-    private int decrementGameAttempts(int gameAttempt) {
-        --gameAttempt;
-
-        Game.setGameAttempt(gameAttempt);
-
-        return gameAttempt;
-    }
-
-
-    private void drawHangman(int gameAttempt) {
-        String picturePartHangman = Hangman.PART_HANGMAN[gameAttempt];
-        System.out.println(picturePartHangman);
-    }
-
-
-    private void printWrongLetterMessage(int gameAttempt) {
-        if (gameAttempt == 0) {
-            System.out.println(letter + " Такой буквы нет. Осталась " + gameAttempt + " попыток.");
-            System.out.println("Правильное слово: " + randomWord);
-        }
-        else if (gameAttempt == 1) {
-            System.out.println(letter + " Такой буквы нет. Осталась " + gameAttempt + " попытка.");
-        }
-        else {
-            System.out.println(letter + " Такой буквы нет. Осталось " + gameAttempt + " попытки.");
-        }
-        System.out.println("Текущее слово: " + maskRandomWord);
     }
 }
 

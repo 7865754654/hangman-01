@@ -1,66 +1,30 @@
-import java.util.Scanner;
-
 public class Game {
-    private static Scanner console = new Scanner(System.in);
-
     private static final String WORDS_FILE  = "words.txt";
-
-    private static Dictionary dictionary = new Dictionary(WORDS_FILE);
 
     private static int gameAttempt = 5;
 
-    private static final String START = "да";
-    private static final String STOP = "нет";
+    private Dictionary dictionary = new Dictionary(WORDS_FILE);
 
-    public static void setGameAttempt(int newGameAttempt) {
-        gameAttempt = newGameAttempt;
+    private String randomWord;
+    private StringBuilder maskRandomWord;
+
+    private char letter;
+
+    private ConsoleUserInput input;
+
+    public Game(ConsoleUserInput input) {
+        this.input = input;
     }
 
-    static {
-        System.out.println("Добро пожаловать !");
-        System.out.printf("Хотите начать новую игру? (%s/%s)%n", START, STOP);
-    }
-
-
-    public static void start() {
-        while (true) {
-            String answerFromUser = console.nextLine().toLowerCase();
-
-            switch (answerFromUser) {
-                case START -> {
-                    playGame();
-                    return;
-                }
-                case STOP -> {
-                    endGame();
-                    return;
-                }
-                default -> System.out.println(
-                        "Нераспознанная команда. Повторите еще раз."
-                );
-                }
-            }
-        }
-
-
-    private static void playGame() {
+    public void playGame() {
         System.out.println();
 
-
         try {
-            String randomWord = dictionary.chooseRandomWord();
             System.out.println("У вас есть 5 попыток, чтобы угадать слово.");
+            randomWord = dictionary.chooseRandomWord();
+            maskRandomWord = new Mask(randomWord).hideWord();
 
-            StringBuilder maskRandomWord = new Mask(randomWord).hideWord();
-
-            SecretWord secretWord = new SecretWord(randomWord, maskRandomWord);
-
-            while (gameAttempt > 0 && !randomWord.equals(maskRandomWord.toString())) {
-                char letter = guessLetter();
-                secretWord.setLetter(letter);
-
-                maskRandomWord = secretWord.findLetterInWord(gameAttempt);
-            }
+            guessSecretWord(randomWord, maskRandomWord);
 
             if (playAgain()) {
                 playGame();
@@ -74,37 +38,66 @@ public class Game {
     }
 
 
-    private static char guessLetter() {
-        while (true) {
-            System.out.println();
-            System.out.print("Введите русскую букву: ");
-            String input = console.nextLine().toLowerCase();
+    private void guessSecretWord(String randomWord, StringBuilder maskRandomWord) {
+        SecretWord secretWord = new SecretWord(randomWord, maskRandomWord);
 
-            if (input.isEmpty()) {
+        while (gameAttempt > 0 && !randomWord.equals(maskRandomWord.toString())) {
+            letter = input.inputLetter();
+
+            if (secretWord.isLetterUsed(letter)) {
                 continue;
             }
 
-            char letter = input.charAt(0);
+            StringBuilder oldMaskRandomWord = new StringBuilder(maskRandomWord);
+            StringBuilder updateMaskRandomWord = secretWord.findLetterInWord(letter);
 
-            if ((letter >= 'а' && letter <= 'я') || letter == 'ё') {
-                return letter;
-            }
+            updateMaskWord(oldMaskRandomWord, updateMaskRandomWord);
+
         }
     }
 
+    private void updateMaskWord(StringBuilder oldMaskRandomWord,
+                                StringBuilder updateMaskRandomWord ) {
 
-    private static boolean playAgain() {
+        if (oldMaskRandomWord.toString().equals(updateMaskRandomWord.toString())) {
+            handleWrongLetter();
+        }
+        maskRandomWord = updateMaskRandomWord;
+    }
+
+    private void handleWrongLetter() {
+        --gameAttempt;
+        Hangman.drawHangman(gameAttempt);
+        printWrongLetterMessage();
+    };
+
+
+    public void printWrongLetterMessage() {
+        if (gameAttempt == 0) {
+            System.out.println("Такой буквы нет. Осталась " + gameAttempt + " попыток.");
+            System.out.println("Правильное слово: " + randomWord);
+        }
+        else if (gameAttempt == 1) {
+            System.out.println("Такой буквы нет. Осталась " + gameAttempt + " попытка.");
+        }
+        else {
+            System.out.println("Такой буквы нет. Осталось " + gameAttempt + " попытки.");
+        }
+        System.out.println("Текущее слово: " + maskRandomWord);
+    }
+
+    private boolean playAgain() {
         if (gameAttempt == 0) {
             gameAttempt = 5;
             System.out.printf("Вы проиграли. Хотите начать заново ?%n");
         } else {
             System.out.printf("Вы справились ! Хотите начать заново ?%n");
         }
-        return console.nextLine().equalsIgnoreCase(START);
+        return input.inputLine().equalsIgnoreCase(MenuGame.START);
     }
 
 
-    private static void endGame() {
+    public void endGame() {
         System.out.println();
         System.out.println("Завершение сессии.");
     }
